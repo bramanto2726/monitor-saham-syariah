@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Masuk · Monitor Saham Syariah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{--bg:#F2F5F3;--surface:#FFFFFF;--surface-2:#E8EEEB;--ink:#0F1F1A;--muted:#566A63;--line:#D3DED9;--accent:#0B6E5B;--accent-ink:#FFFFFF;--brass:#9C6F17;--down:#C23A2E;--down-bg:#FBE7E4;--warn:#A86A0B;
+  --f-display:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif;--f-body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1210;--surface:#111C18;--surface-2:#18261F;--ink:#E2EDE8;--muted:#93A7A0;--line:#243630;--accent:#37C29F;--accent-ink:#06120E;--brass:#D9A746;--down:#FF6E61;--down-bg:#3A1A17;--warn:#F0B44C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A1210;--surface:#111C18;--surface-2:#18261F;--ink:#E2EDE8;--muted:#93A7A0;--line:#243630;--accent:#37C29F;--accent-ink:#06120E;--brass:#D9A746;--down:#FF6E61;--down-bg:#3A1A17;--warn:#F0B44C;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;display:flex;flex-direction:column;min-height:100vh;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+main{flex:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center;max-width:1040px;width:100%;margin:0 auto}
+.intro h1{font-family:var(--f-display);font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.02;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.intro p{color:var(--muted);max-width:44ch;margin:14px 0 0}
+.tape{margin-top:26px;display:flex;flex-wrap:wrap;gap:8px;font-family:var(--f-mono);font-size:.82rem}
+.tape span{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--surface)}
+.tape b{color:var(--accent);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 10px 30px -18px rgba(0,0,0,.35)}
+.card h2{font-family:var(--f-display);font-size:1.4rem;margin:0 0 4px}
+.card .sub{color:var(--muted);font-size:.88rem;margin:0 0 18px}
+label{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin:14px 0 5px}
+input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pw{position:relative}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--accent);font-weight:600;font-size:.8rem;cursor:pointer;padding:6px}
+.go{margin-top:20px;width:100%;border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;padding:12px;border-radius:9px;cursor:pointer}
+.go[disabled]{opacity:.6;cursor:wait}
+.err{margin-top:14px;background:var(--down-bg);color:var(--down);border-radius:8px;padding:9px 12px;font-size:.88rem}
+.note{margin-top:16px;font-size:.8rem;color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.chk{display:flex;gap:8px;align-items:center;font-size:.86rem;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:500;margin:0}
+.chk input{width:16px;height:16px;padding:0;accent-color:var(--accent)}
+.link{border:0;background:none;color:var(--accent);font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;padding:0}
+.help{margin-top:12px;background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:.84rem}
+.warn{font-size:.76rem;color:var(--muted);margin-top:4px}
+footer{max-width:1040px;width:100%;margin:28px auto 0;border-top:1px solid var(--line);padding-top:14px;font-size:.84rem;display:flex;flex-direction:column;gap:6px}
+footer b{font-weight:700}
+footer .disc{color:var(--muted);border-left:3px solid var(--warn);padding-left:10px}
+[hidden]{display:none!important}
+@media (max-width:820px){main{grid-template-columns:minmax(0,1fr);gap:24px}.intro p{display:none}.tape{margin-top:14px}}
+</style>
+</head>
+<body>
+<main>
+  <section class="intro">
+    <h1>Monitor Saham Syariah</h1>
+    <p>Pantau saham Daftar Efek Syariah OJK: harga live, alarm naik/turun cepat, titik beli/jual, tren laporan keuangan, dan berita terbaru per emiten.</p>
+    <div class="tape" aria-hidden="true"><span>Scalper</span><span>Day Trader</span><span>Swing</span><span>Investor</span><span><b>DES</b> OJK</span></div>
+  </section>
+  <section class="card" aria-labelledby="h">
+    <h2 id="h">Masuk</h2>
+    <p class="sub">Gunakan akun yang diberikan admin.</p>
+    <form id="f" novalidate autocomplete="off">
+      <label for="u">Username</label>
+      <input id="u" name="mss-u" autocomplete="off" autocapitalize="off" spellcheck="false" required readonly>
+      <label for="p">Password</label>
+      <div class="pw"><input id="p" name="mss-p" type="password" autocomplete="new-password" required readonly><button type="button" id="show" aria-label="Tampilkan password">Lihat</button></div>
+      <div class="row">
+        <label class="chk" for="rem"><input type="checkbox" id="rem"> Ingat username &amp; password</label>
+        <button type="button" class="link" id="forgot" aria-expanded="false" aria-controls="help">Lupa password?</button>
+      </div>
+      <div class="warn" id="remWarn" hidden>Disimpan terenkripsi di browser ini saja. Jangan dicentang di komputer umum atau milik bersama.</div>
+      <div class="help" id="help" hidden>Hubungi admin aplikasi dan sebutkan username Anda. Admin akan me-reset password dan memberi password sementara; Anda diminta menggantinya saat login berikutnya.</div>
+      <button class="go" id="go" type="submit">Masuk</button>
+      <div class="err" id="err" role="alert" hidden></div>
+    </form>
+    <p class="note">Belum punya akun? Minta admin membuatkan username dan password untuk Anda.</p>
+  </section>
+</main>
+<footer>
+  <b>Didisain oleh @letsgobram - @motivaseein</b>
+  <span class="disc">Sinyal dan titik beli/jualnya hasil perhitungan otomatis, bukan nasihat investasi atau jaminan untung. Aplikasi atau pembuatnya bukan penasihat keuangan berlisensi</span>
+</footer>
+<script>
+(function(){
+  try{const t=JSON.parse(localStorage.getItem("mss2_theme_global"));if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}
+  const f=document.getElementById("f"),err=document.getElementById("err"),go=document.getElementById("go"),p=document.getElementById("p");
+  const u=document.getElementById("u"),rem=document.getElementById("rem"),remWarn=document.getElementById("remWarn");
+  document.getElementById("show").onclick=function(){const s=p.type==="password";p.type=s?"text":"password";this.textContent=s?"Sembunyi":"Lihat"};
+  document.getElementById("forgot").onclick=function(){const h=document.getElementById("help");h.hidden=!h.hidden;this.setAttribute("aria-expanded",String(!h.hidden))};
+  rem.onchange=()=>{remWarn.hidden=!rem.checked};
+  /* "Ingat saya": kredensial dienkripsi AES-GCM; kuncinya CryptoKey non-ekspor di IndexedDB, bukan teks biasa. */
+  const LS="mss2_remember";const canCrypto=!!(window.crypto&&crypto.subtle&&window.indexedDB&&window.isSecureContext);
+  function idb(){return new Promise((res,rej)=>{const r=indexedDB.open("mss2_keys",1);r.onupgradeneeded=()=>r.result.createObjectStore("k");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+  async function keyOp(mode,val){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction("k",mode==="get"?"readonly":"readwrite");const st=tx.objectStore("k");
+    const rq=mode==="get"?st.get("remember"):mode==="put"?st.put(val,"remember"):st.delete("remember");rq.onsuccess=()=>res(rq.result);rq.onerror=()=>rej(rq.error)})}
+  async function getKey(create){let k=await keyOp("get");if(!k&&create){k=await crypto.subtle.generateKey({name:"AES-GCM",length:256},false,["encrypt","decrypt"]);await keyOp("put",k)}return k}
+  const b64=a=>btoa(String.fromCharCode(...new Uint8Array(a))),unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+  async function saveCreds(username,password){const k=await getKey(true);const iv=crypto.getRandomValues(new Uint8Array(12));
+    const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify({username,password})));localStorage.setItem(LS,JSON.stringify({iv:b64(iv),ct:b64(ct)}))}
+  async function loadCreds(){const raw=localStorage.getItem(LS);if(!raw)return null;const k=await getKey(false);if(!k)return null;const o=JSON.parse(raw);
+    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb64(o.iv)},k,unb64(o.ct));return JSON.parse(new TextDecoder().decode(pt))}
+  async function forgetCreds(){try{localStorage.removeItem(LS);await keyOp("del")}catch(e){}}
+  if(!canCrypto){rem.closest(".chk").hidden=true}
+  /* Kosongkan kolom (cegah isi otomatis browser) lalu isi hanya bila "Ingat" pernah dicentang. */
+  setTimeout(async()=>{u.value="";p.value="";u.readOnly=false;p.readOnly=false;
+    if(canCrypto){try{const c=await loadCreds();if(c){u.value=c.username;p.value=c.password;rem.checked=true;remWarn.hidden=false}}catch(e){forgetCreds()}}
+    (u.value?document.getElementById("go"):u).focus()},60);
+  fetch("/auth/me",{cache:"no-store"}).then(r=>{if(r.ok)location.replace("/")}).catch(()=>{});
+  f.addEventListener("submit",async e=>{e.preventDefault();err.hidden=true;
+    const username=document.getElementById("u").value.trim(),password=p.value;
+    if(!username||!password){err.textContent="Isi username dan password.";err.hidden=false;return}
+    go.disabled=true;go.textContent="Memeriksa…";
+    try{const r=await fetch("/auth/login",{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"mss"},body:JSON.stringify({username,password})});
+      const j=await r.json().catch(()=>({}));
+      if(r.ok){try{if(rem.checked&&canCrypto)await saveCreds(username,password);else await forgetCreds()}catch(e){}location.replace("/");return}
+      err.textContent=j.error||"Gagal masuk ("+r.status+").";err.hidden=false;if(r.status===401)forgetCreds();p.value="";p.focus()}
+    catch(x){err.textContent="Server tidak dapat dihubungi. Periksa koneksi lalu coba lagi.";err.hidden=false}
+    finally{go.disabled=false;go.textContent="Masuk"}});
+})();
+</script>
+</body>
+</html>

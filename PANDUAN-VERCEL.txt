@@ -1,0 +1,104 @@
+MONITOR SAHAM SYARIAH - VERSI VERCEL (kode di GitHub, tampil di Vercel)
+Didisain oleh @letsgobram - @motivaseein
+=====================================================================
+
+Versi ini berjalan sepenuhnya online: halaman aplikasi, login, admin, dan
+data live (harga, laporan keuangan, dividen, berita, Daftar Efek Syariah).
+Alamatnya otomatis HTTPS, misalnya https://monitor-saham.vercel.app
+
+KENAPA TIDAK CUKUP DI GITHUB PAGES?
+GitHub Pages hanya bisa menampilkan file statis. Login, akun pengguna, dan
+pengambilan data live butuh bagian server. Jika index.html dibuka langsung
+(klik dua kali) atau dari GitHub Pages, aplikasi berjalan OFFLINE dengan
+data cadangan tanggal 15 Oktober 2026 dan tidak akan terupdate.
+GitHub dipakai untuk MENYIMPAN kode; Vercel yang MENJALANKANNYA.
+
+ISI FOLDER
+----------
+vercel.json        pengaturan Vercel (rute, keamanan, region Singapura)
+package.json       daftar pustaka (dipasang otomatis oleh Vercel)
+api/mss.js         pintu masuk server
+server/app.mjs     server: login, admin, data live
+server/page.mjs    halaman aplikasi (hanya untuk yang sudah login)
+public/            halaman login + pustaka grafik/PDF/Excel
+
+LANGKAH 1 - Simpan kode di GitHub
+---------------------------------
+1. Masuk ke github.com, klik "New repository".
+   Nama: monitor-saham, pilih PRIVATE, klik "Create repository".
+2. Klik "uploading an existing file".
+3. Ekstrak ZIP ini, buka folder Monitor-Saham-Syariah-Vercel, lalu seret
+   SEMUA ISINYA (vercel.json, package.json, folder api, server, public)
+   ke halaman GitHub. Klik "Commit changes".
+   Pastikan vercel.json ada di halaman utama repository, bukan di subfolder.
+
+LANGKAH 2 - Hubungkan ke Vercel
+-------------------------------
+1. Buka vercel.com, daftar/masuk dengan akun GitHub.
+2. Klik "Add New..." > "Project", izinkan akses GitHub, pilih repository
+   monitor-saham, klik "Import".
+3. Framework Preset: biarkan "Other". Pengaturan lain sudah terbaca dari
+   vercel.json. Klik "Deploy" dan tunggu sampai selesai.
+
+LANGKAH 3 - Pasang penyimpanan akun (WAJIB, sekali saja)
+--------------------------------------------------------
+Akun pengguna, Daftar Efek Syariah, dan catatan aktivitas disimpan di
+Vercel Blob (privat).
+1. Buka proyek di Vercel > tab "Storage" > "Create" > pilih "Blob".
+2. Pada pilihan akses, pilih PRIVATE. Beri nama, mis. monitor-saham-data.
+3. Hubungkan (Connect) ke proyek monitor-saham untuk semua environment.
+4. Buka tab "Deployments", klik titik tiga pada deployment teratas >
+   "Redeploy". Tunggu sampai selesai.
+Jika langkah ini terlewat, halaman login menampilkan pesan
+"Penyimpanan belum terhubung".
+
+LANGKAH 4 - Masuk pertama kali
+------------------------------
+1. Buka alamat https://<nama-proyek>.vercel.app
+2. Login: username AdminCoba1, password Trial1!
+3. Anda langsung diminta mengganti password. Lakukan sekarang.
+4. Penanda di kanan atas harus hijau "LIVE". Pemuatan pertama sekitar
+   20-60 detik.
+
+MEMPERBARUI APLIKASI
+--------------------
+Unggah file baru ke repository GitHub (timpa yang lama). Vercel otomatis
+membangun ulang dalam 1-2 menit. Akun pengguna TIDAK hilang.
+
+PENGATURAN TAMBAHAN (opsional)
+------------------------------
+Vercel > proyek > Settings > Environment Variables:
+  MSS_SECRET          teks acak panjang (min. 32 karakter) untuk kunci sesi.
+                      Jika kosong, aplikasi membuat kunci sendiri di Blob.
+  MSS_SESSION_HOURS   lama sesi login, default 12 (jam).
+Setelah mengubah, lakukan Redeploy.
+Domain sendiri: Settings > Domains > Add, ikuti petunjuk DNS. HTTPS otomatis.
+
+LUPA PASSWORD ADMIN (dan tidak ada admin lain)
+----------------------------------------------
+Vercel > Storage > store Blob Anda > Browser > folder monitor-saham >
+hapus file users.json. Akun admin awal (AdminCoba1 / Trial1!) dibuat ulang.
+Perhatian: SEMUA akun lain ikut terhapus dan harus dibuat ulang.
+
+JIKA DATA TIDAK LIVE / TIDAK TERUPDATE
+--------------------------------------
+- Penanda OFFLINE: pastikan Anda membuka alamat vercel.app (bukan file
+  index.html atau GitHub Pages). Klik "Perbarui".
+- Sebagian saham gagal dimuat: Yahoo Finance kadang membatasi permintaan
+  dari server cloud. Klik "Perbarui" beberapa menit kemudian.
+- Cek log: Vercel > proyek > Logs, cari pesan error dari /api/mss.
+- Ambil DES otomatis gagal: gunakan tombol "Impor file DES" (admin).
+
+BATASAN
+-------
+- Paket gratis Vercel (Hobby) ditujukan untuk pemakaian pribadi/non-
+  komersial dan punya kuota bulanan (function, transfer, Blob). Pantau di
+  Vercel > Usage. Untuk dipakai banyak orang atau komersial, pertimbangkan
+  paket Pro.
+- Login dikunci 15 menit setelah 5 kali salah.
+
+PENTING
+-------
+Sinyal dan titik beli/jualnya hasil perhitungan otomatis, bukan nasihat
+investasi atau jaminan untung. Aplikasi atau pembuatnya bukan penasihat
+keuangan berlisensi.
