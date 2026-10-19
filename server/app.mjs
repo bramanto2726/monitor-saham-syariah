@@ -23,20 +23,33 @@ async function blobLib() { try { if (!_blob) _blob = await import("@vercel/blob"
 const blobErr = (e) => new Error(/credential|token|store/i.test(String(e && e.message))
   ? "Penyimpanan belum terhubung. Di Vercel buka Storage > Create > Blob (akses Private), hubungkan ke proyek ini, lalu Redeploy."
   : "Penyimpanan Vercel Blob gagal: " + String(e && e.message).slice(0, 160));
+// Cache di memori agar kuota gratis Blob (operasi baca) tidak cepat habis:
+// kunci akun dibaca ulang paling sering tiap 5 menit per instance; tulisan sendiri langsung memperbarui cache.
+const MEM = new Map();
+const TTL = { secret: Infinity, users: 300e3, des: 300e3 };
 async function sget(k) {
-  if (globalThis.__MSS_TEST_STORE) return globalThis.__MSS_TEST_STORE.get(k);
-  const { get } = await blobLib();
-  let r;
-  try { r = await get(BLOB_DIR + k + ".json", { access: "private", useCache: false }); } catch (e) { throw blobErr(e); }
-  if (!r || r.statusCode !== 200 || !r.stream) return null;
-  const txt = await new Response(r.stream).text();
-  try { return JSON.parse(txt); } catch { return null; }
+  const ttl = TTL[k] || 0, c = MEM.get(k);
+  if (ttl && c && Date.now() - c.t < ttl) return c.v == null ? null : JSON.parse(c.v);
+  let v;
+  if (globalThis.__MSS_TEST_STORE) v = await globalThis.__MSS_TEST_STORE.get(k);
+  else {
+    const { get } = await blobLib();
+    let r;
+    try { r = await get(BLOB_DIR + k + ".json", { access: "private", useCache: false }); } catch (e) { throw blobErr(e); }
+    v = null;
+    if (r && r.statusCode === 200 && r.stream) { try { v = JSON.parse(await new Response(r.stream).text()); } catch { v = null; } }
+  }
+  if (ttl) MEM.set(k, { t: Date.now(), v: v == null ? null : JSON.stringify(v) });
+  return v;
 }
 async function sset(k, v) {
-  if (globalThis.__MSS_TEST_STORE) return globalThis.__MSS_TEST_STORE.setJSON(k, v);
-  const { put } = await blobLib();
-  try { await put(BLOB_DIR + k + ".json", JSON.stringify(v), { access: "private", allowOverwrite: true, addRandomSuffix: false, contentType: "application/json", cacheControlMaxAge: 60 }); }
-  catch (e) { throw blobErr(e); }
+  if (globalThis.__MSS_TEST_STORE) await globalThis.__MSS_TEST_STORE.setJSON(k, v);
+  else {
+    const { put } = await blobLib();
+    try { await put(BLOB_DIR + k + ".json", JSON.stringify(v), { access: "private", allowOverwrite: true, addRandomSuffix: false, contentType: "application/json", cacheControlMaxAge: 60 }); }
+    catch (e) { throw blobErr(e); }
+  }
+  if (TTL[k]) MEM.set(k, { t: Date.now(), v: JSON.stringify(v) });
 }
 
 async function secret() {
@@ -153,7 +166,7 @@ const clientIP = (req, ctx) => ctx?.ip || (req.headers.get("x-real-ip") || req.h
 
 /* ------------------------------------------------------------------ main handler */
 export const handle = async (req, context) => {
-  const url = new URL(req.url);
+  const url = new URL(req.url, "https://" + (req.headers.get("host") || "localhost"));
   // vercel.json meneruskan path asli lewat ?__path=...
   const forced = url.searchParams.get("__path");
   url.searchParams.delete("__path");
